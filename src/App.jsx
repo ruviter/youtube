@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import "./App.css";
+import VideoList from "./components/videoList/videoList";
 
 function App() {
   const [videos, setVideos] = useState([]);
@@ -10,19 +11,16 @@ function App() {
       redirect: "follow",
     };
     fetch(
-      `https://youtube.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatistics&chart=mostPopular&maxResults=10&regionCode=US&key=${API_KEY}`,
+      `https://youtube.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatistics&chart=mostPopular&maxResults=5&regionCode=US&key=${API_KEY}`,
       requestOption
     )
       .then((response) => response.json())
-      .then((result) => setVideos(result.items));
+      .then((result) => setVideos(result.items))
+      .catch((error) => console.log(error));
   }, []);
-  return (
-    <div>
-      {videos.map((v) => (
-        <li>{v.snippet.title}</li>
-      ))}
-    </div>
-  );
+  return <div>
+    <VideoList videos={videos}/>
+  </div>;
 }
 
 export default App;
