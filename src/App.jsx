@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import "./App.css";
+import Search from "./components/header/search";
 import VideoList from "./components/videoList/videoList";
 
 function App() {
@@ -18,9 +19,27 @@ function App() {
       .then((result) => setVideos(result.items))
       .catch((error) => console.log(error));
   }, []);
-  return <div>
-    <VideoList videos={videos}/>
-  </div>;
+  function handleSearchKeyword(e) {
+    e.preventDefault();
+    const q = e.target[0].value;
+    const requestOption = {
+      method: "GET",
+      redirect: "follow",
+    };
+    fetch(
+      `https://youtube.googleapis.com/youtube/v3/search?part=snippet&maxResults=5&q=${q}&regionCode=US&key=${API_KEY}`,
+      requestOption
+    )
+      .then((response) => response.json())
+      .then((result) => setVideos(result.items))
+      .catch((error) => console.log(error));
+  }
+  return (
+    <div>
+      <Search handleSearchKeyword={handleSearchKeyword} />
+      <VideoList videos={videos} />
+    </div>
+  );
 }
 
 export default App;
