@@ -1,41 +1,25 @@
 import { useEffect, useState } from "react";
-import "./App.css";
+import styles from "./App.module.css";
 import Search from "./components/header/search";
 import VideoList from "./components/videoList/videoList";
 
-function App() {
+function App({ youtube }) {
   const [videos, setVideos] = useState([]);
-  const API_KEY = "AIzaSyBNhcdE4LbYnmWr9_Mv-GAU5p0yFn9C6YM";
+
   useEffect(() => {
-    const requestOption = {
-      method: "GET",
-      redirect: "follow",
-    };
-    fetch(
-      `https://youtube.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatistics&chart=mostPopular&maxResults=5&regionCode=US&key=${API_KEY}`,
-      requestOption
-    )
-      .then((response) => response.json())
-      .then((result) => setVideos(result.items))
-      .catch((error) => console.log(error));
+    youtube
+      .popular() //
+      .then(result=>setVideos(result.items));
   }, []);
-  function handleSearchKeyword(e) {
-    e.preventDefault();
-    const q = e.target[0].value;
-    const requestOption = {
-      method: "GET",
-      redirect: "follow",
-    };
-    fetch(
-      `https://youtube.googleapis.com/youtube/v3/search?part=snippet&maxResults=5&q=${q}&regionCode=US&key=${API_KEY}`,
-      requestOption
-    )
-      .then((response) => response.json())
-      .then((result) => setVideos(result.items))
+
+  function handleSearchKeyword(q) {
+    youtube.search(q)
+      .then((items) => setVideos(items))
       .catch((error) => console.log(error));
   }
+
   return (
-    <div>
+    <div className={styles.app}>
       <Search handleSearchKeyword={handleSearchKeyword} />
       <VideoList videos={videos} />
     </div>
