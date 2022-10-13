@@ -1,36 +1,46 @@
-import { useEffect, useState } from "react";
-import styles from "./App.module.css";
-import Search from "./components/header/search";
-import PlayVideo from "./components/playVideo/playVideo";
-import VideoList from "./components/videoList/videoList";
+import React, { useEffect, useState } from 'react';
+import styles from './app.module.css';
+import VideoList from './components/video_list/video_list';
+import SearchHeader from './components/search_header/search_header';
+import VideoDetail from './components/video_detail/video_detail';
 
 function App({ youtube }) {
   const [videos, setVideos] = useState([]);
-  const [videoId, setVideoId] = useState();
-  const [play, setPlay] = useState(false);
+  const [selectedVideo, setSelectedVideo] = useState(null);
+
+  const selectVideo = video => {
+    setSelectedVideo(video);
+  };
+
+  const search = query => {
+    youtube
+      .search(query) //
+      .then(videos => setVideos(videos));
+      setSelectedVideo(null)
+  };
 
   useEffect(() => {
     youtube
-      .popular() //
-      .then((result) => setVideos(result.items));
+      .mostPopular() //
+      .then(videos => setVideos(videos));
   }, []);
-
-  function handleSearchKeyword(q) {
-    youtube
-      .search(q) //
-      .then((items) => setVideos(items));
-  }
-
-  function videoClick(id) {
-    setPlay((play) => (play = true));
-    setVideoId(id);
-  }
-
   return (
     <div className={styles.app}>
-      <Search handleSearchKeyword={handleSearchKeyword} />
-      {play ? <PlayVideo id={videoId} /> : null}
-      <VideoList videos={videos} videoClick={videoClick} />
+      <SearchHeader onSearch={search} />
+      <section className={styles.content}>
+        {selectedVideo && (
+          <div className={styles.detail}>
+            <VideoDetail video={selectedVideo} />
+          </div>
+        )}
+        <div className={styles.list}>
+          <VideoList
+            videos={videos}
+            onVideoClick={selectVideo}
+            display={selectedVideo ? 'list' : 'grid'}
+          />
+        </div>
+      </section>
     </div>
   );
 }

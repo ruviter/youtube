@@ -1,18 +1,20 @@
-import React, { useRef, useState } from "react";
-import styles from "./search.module.css";
-const Search = ({ handleSearchKeyword }) => {
+import styles from './search_header.module.css';
+import React, { useRef } from 'react';
+
+const SearchHeader = ({ onSearch }) => {
   const inputRef = useRef();
   const handleSearch = () => {
-    handleSearchKeyword(inputRef.current.value);
+    const value = inputRef.current.value;
+    onSearch(value);
   };
-  const onKeyPress = (e) => {
-    if (e.key === "Enter") {
+  const onClick = () => {
+    handleSearch();
+  };
+
+  const onKeyPress = event => {
+    if (event.key === 'Enter') {
       handleSearch();
     }
-  };
-  const onClick = (e) => {
-    e.preventDefault();
-    handleSearch();
   };
   return (
     <header className={styles.header}>
@@ -38,4 +40,4 @@ const Search = ({ handleSearchKeyword }) => {
   );
 };
 
-export default Search;
+export default SearchHeader;
